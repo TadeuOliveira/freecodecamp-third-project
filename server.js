@@ -5,6 +5,7 @@ const dns = require('dns');
 const app = express();
 const bodyParser = require("body-parser");
 const { mongoose, ShortUrl } = require('./initializeDocuments.js');
+const http = require('http');
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
@@ -27,7 +28,16 @@ app.get("/is-mongoose-ok", function (req, res) {
   }
 });
 
-app.get('/api/shorturl/:dns', function(req, res) {
+app.get('/api/shorturl/:shorturl', function(req, res) {
+  ShortUrl.find({ short_url: req.params.shorturl }, function(err, data){
+    if(err){
+      res.json({error: "No short URL found for the given input"})
+      return;
+    }
+    res.writeHead(301, { "Location": "http://"+data[0].original_url})
+    res.end();
+  });
+
 });
 
 app.post('/api/shorturl', function(req, res){
