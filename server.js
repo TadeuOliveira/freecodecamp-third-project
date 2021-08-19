@@ -3,13 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const dns = require('dns');
 const app = express();
-let mongoose;
-try {
-  mongoose = require("mongoose");
-} catch (e) {
-  console.log(e);
-}
 const bodyParser = require("body-parser");
+const { mongoose, ShortUrl } = require('./initializeDocuments.js');
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
@@ -36,7 +31,6 @@ app.get('/api/shorturl/:dns', function(req, res) {
 });
 
 app.post('/api/shorturl', function(req, res){
-
   dns.lookup(req.body.url,null,(err) => {
     if(err){
       res.json({error: 'invalid url', value: req.body.url});
