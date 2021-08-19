@@ -36,6 +36,15 @@ app.post('/api/shorturl', function(req, res){
       res.json({error: 'invalid url', value: req.body.url});
       return;
     }
+    let surl = new ShortUrl({
+      original_url: req.body.url
+    });
+    surl.save(function(err, data){
+      if(err){
+        console.error(err)
+      }
+      console.log('new shorturl document saved!', data)
+    })
     res.json({status: 'ok!', value: req.body.url});
   });
 })
