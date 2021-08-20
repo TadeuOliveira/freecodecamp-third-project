@@ -41,6 +41,10 @@ app.get('/api/shorturl/:shorturl', function(req, res) {
 });
 
 app.post('/api/shorturl', function(req, res){
+  if(!req.body.url.includes('http')){
+    res.json({error: 'invalid url'});
+    return;
+  }
   const domain = (new URL(req.body.url)).hostname;
   dns.lookup(domain,null,(err) => {
     if(err){
