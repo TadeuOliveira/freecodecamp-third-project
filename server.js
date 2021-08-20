@@ -34,16 +34,17 @@ app.get('/api/shorturl/:shorturl', function(req, res) {
       res.json({error: "No short URL found for the given input"})
       return;
     }
-    res.writeHead(301, { "Location": "http://"+data[0].original_url})
+    res.writeHead(301, { "Location": data[0].original_url})
     res.end();
   });
 
 });
 
 app.post('/api/shorturl', function(req, res){
-  dns.lookup(req.body.url,null,(err) => {
+  const domain = (new URL(req.body.url)).hostname;
+  dns.lookup(domain,null,(err) => {
     if(err){
-      res.json({error: 'invalid url', value: req.body.url});
+      res.json({error: 'invalid url'});
       return;
     }
     let surl = new ShortUrl({
@@ -53,9 +54,14 @@ app.post('/api/shorturl', function(req, res){
       if(err){
         console.error(err)
       }
-      console.log('new shorturl document saved!', data)
-    })
-    res.json({status: 'ok!', value: req.body.url});
+      console.log('new shorturl document saved!', data);
+      res.json(
+        {
+          original_url: data.original_url,
+          short_url: data.short_url
+        }
+      );
+    });
   });
 })
 
